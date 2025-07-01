@@ -219,19 +219,42 @@ class GameRenderer:
 
     def _render_ui_overlays(self, player: Player, monster: Optional[Monster], fps: float, ai_metrics: Dict = None, treasure_info: Dict = None):
         """Render UI overlays with modern design."""
+        # Color legend at the top middle
+        self._render_color_legend()
         # Player stats panel
         self._render_player_stats_panel(player, treasure_info)
-
         # Combat info panel
         if monster:
             self._render_combat_panel(player, monster)
-
         # FPS counter
         self._render_fps_counter(fps)
-
         # AI metrics panel
         if ai_metrics:
             self._render_ai_metrics_panel(ai_metrics)
+
+    def _render_color_legend(self):
+        """Render a color legend at the top middle of the screen for Player, Monster, Treasure, Trap, and Health."""
+        legend_items = [
+            ("Player", self.PLAYER_COLOR),
+            ("Monster", self.MONSTER_COLOR),
+            ("Treasure", self.CHEST_COLOR),
+            ("Trap", self.TRAP_COLOR),
+            ("Health", (255, 140, 0)),
+        ]
+        padding = 18
+        box_size = 18
+        font = self.small_font
+        total_width = sum(font.size(label)[0] + box_size + padding for label, _ in legend_items) - padding
+        screen_width = self.screen.get_width()
+        x = (screen_width - total_width) // 2
+        y = 12
+        for label, color in legend_items:
+            # Draw color box
+            pygame.draw.rect(self.screen, color, (x, y, box_size, box_size), border_radius=4)
+            # Draw label
+            label_surface = font.render(label, True, self.UI_TEXT)
+            self.screen.blit(label_surface, (x + box_size + 6, y + 1))
+            x += font.size(label)[0] + box_size + padding
 
     def _render_player_stats_panel(self, player: Player, treasure_info: Dict = None):
         """Render player stats in a modern panel."""
