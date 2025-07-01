@@ -12,6 +12,7 @@ from src.world.tile import TileType
 import math
 import json
 import os
+import random
 
 def main():
     """Main function to start the Dungeon Duo game."""
@@ -193,8 +194,12 @@ def main():
     movement_cooldown = 100  # milliseconds between moves when holding a key
     last_move_time = 0
 
+    # Add at the top of main() or where globals are defined
+    player_attack_request = False
+
     def enhanced_handle_events():
-        nonlocal collected_treasures
+        print('[DEBUG] enhanced_handle_events running')
+        nonlocal collected_treasures, player_attack_request
         for event in pygame.event.get():
             # Reset movement keys if window focus is lost
             if event.type == pygame.ACTIVEEVENT:
@@ -237,6 +242,9 @@ def main():
                             print('Health quest consumed! +10 health.')
                         elif result.get('type') == 'health_quest_full_health':
                             print('Cannot consume health quest: health is already full.')
+                elif event.key == pygame.K_SPACE:
+                    player_attack_request = True
+                    print('[DEBUG] SPACE pressed, player_attack_request set to True')
             elif event.type == pygame.KEYUP:
                 if event.key in (pygame.K_w, pygame.K_UP):
                     movement_keys_held['up'] = False
@@ -248,7 +256,7 @@ def main():
                     movement_keys_held['right'] = False
             hud_manager.process_event(event)
             manager.process_events(event)
-        original_handle_events()
+        print(f'[DEBUG] End of handle_events: player_attack_request={player_attack_request}')
         if engine.current_state == GameState.PLAYING:
             pass
 
@@ -281,8 +289,17 @@ def main():
     original_update = engine.update
 
     def enhanced_update():
+        nonlocal player_attack_request
         original_update()
+        # Set player.is_attacking from the persistent request flag
+        player.is_attacking = player_attack_request
+        print(f'[DEBUG] Before attack check: player.is_attacking={player.is_attacking}')
+        engine._check_monster_player_interaction()
+        print(f'[DEBUG] After attack check: player.is_attacking={player.is_attacking}')
         check_game_state()
+        # After all updates, reset attack request and attack state
+        player_attack_request = False
+        player.is_attacking = False
 
         # Continuous movement logic with cooldown
         nonlocal last_move_time
@@ -379,11 +396,9 @@ def main():
     print("Controls:")
     print("  WASD or Arrow Keys: Move player")
     print("  SPACE: Attack")
-    print("  E: Interact with objects (chests, doors)")
-    print("  1-9: Use items from inventory slots")
     print("  ESC: Exit game")
     print("  R: Regenerate dungeon")
-    print("  T: Toggle visibility")
+
     print("\nGame Features:")
     print("  - Procedural dungeon generation")
 

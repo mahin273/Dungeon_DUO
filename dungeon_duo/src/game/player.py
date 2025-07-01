@@ -185,6 +185,7 @@ class Player:
 
     def take_damage(self, amount: int, damage_type: str = "physical"):
         """Enhanced damage handling with skill effects and damage types."""
+        print(f"[DEBUG] Player.take_damage called: amount={amount}, damage_type={damage_type}, health_before={self.stats.health}")
 
         # Environmental damage should not be reduced by armor or skills
         if damage_type == "environmental":

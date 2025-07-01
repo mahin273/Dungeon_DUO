@@ -755,7 +755,7 @@ class Monster:
                 pass
 
     def take_damage(self, amount: int):
-        """Handle receiving damage with armor consideration."""
+        print(f"[DEBUG] Monster.take_damage called: amount={amount}, health_before={self.stats.health}")
         # Apply armor defense if equipped
         if self.equipped_armor:
             # Reduce damage based on armor type
@@ -901,8 +901,6 @@ class Monster:
             self.combat_stats.strength += 4
         elif skill_id == "thick_hide":
             self.combat_stats.constitution += 2
-        elif skill_id == "regeneration":
-            self.regeneration = True
         elif skill_id == "shadow_step":
             self.shadow_step = True
         elif skill_id == "venomous":
@@ -953,12 +951,6 @@ class Monster:
         if hasattr(self, 'venomous') and self.venomous:
             self.poison_damage = 5
             self.poison_duration = 3
-
-        # Regeneration: Heal over time
-        if hasattr(self, 'regeneration') and self.regeneration:
-            if self.stats.health < self.stats.max_health:
-                heal_amount = 2 * delta_time  # 2 HP per second
-                self.stats.health = min(self.stats.max_health, self.stats.health + heal_amount)
 
     def _is_valid_position(self, x: float, y: float) -> bool:
         """Check if a position is valid (within bounds and walkable)."""

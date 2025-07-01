@@ -38,6 +38,7 @@ class CombatSystem:
 
     def process_attack(self, attacker, defender, weapon: Weapon = None):
         """Processes an attack from an attacker on a defender."""
+        print(f"[DEBUG] process_attack called: attacker={getattr(attacker, 'name', attacker)}, defender={getattr(defender, 'name', defender)}, weapon={getattr(weapon, 'name', weapon) if weapon else None}")
         if not attacker or not defender:
             return
 

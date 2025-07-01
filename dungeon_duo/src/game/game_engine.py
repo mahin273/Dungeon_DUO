@@ -418,6 +418,7 @@ class GameEngine:
 
     def _check_monster_player_interaction(self):
         """Check for interactions between monster and player."""
+        print(f"[DEBUG] _check_monster_player_interaction: player.is_attacking={getattr(self.player, 'is_attacking', None)}, monster.is_attacking={getattr(self.monster, 'is_attacking', None)}")
         if not self.player or not self.monster:
             return
 
