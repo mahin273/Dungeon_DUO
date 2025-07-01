@@ -29,8 +29,8 @@ from .items.weapon import Weapon, WeaponType
 @dataclass
 class MonsterStats:
     """Monster statistics and attributes."""
-    health: int = 150
-    max_health: int = 150
+    health: int = 100
+    max_health: int = 100
     speed: float = 4.0
     attack_power: int = 15
     defense: int = 8
@@ -813,10 +813,10 @@ class Monster:
         expired_effects = []
 
         for effect_type, effect_data in self.active_effects.items():
-            # Apply damage per turn
-            if effect_data["damage_per_turn"] > 0:
-                self.take_damage(effect_data["damage_per_turn"])
-                print(f"{self.name} takes {effect_data['damage_per_turn']} {effect_type} damage!")
+            # Remove or comment out poison/environmental/special effect damage to monster
+            # if effect_data["damage_per_turn"] > 0:
+            #     self.take_damage(effect_data["damage_per_turn"])
+            #     print(f"{self.name} takes {effect_data['damage_per_turn']} {effect_type} damage!")
 
             # Reduce duration
             effect_data["duration"] -= 1

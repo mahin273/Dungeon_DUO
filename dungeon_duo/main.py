@@ -342,8 +342,8 @@ def main():
         if enhanced_update.debug_frame_count % 600 == 0:  # Every 10 seconds (60 FPS * 10)
             print(f"=== GAME STATUS ===")
             print(f"Player: ({player.x:.1f}, {player.y:.1f}) HP: {player.stats.health}/{player.stats.max_health}")
-            print(f"Monster: ({monster.x:.1f}, {monster.y:.1f}) HP: {monster.stats.health}/{monster.stats.max_health}")
             print(f"Distance: {math.sqrt((player.x - monster.x)**2 + (player.y - monster.y)**2):.1f}")
+            print(f"Monster Health: {monster.stats.health}/{monster.stats.max_health}")
             print("==================")
 
         # Clear screen and render the frame using GameRenderer

@@ -311,7 +311,7 @@ class GameRenderer:
         self.screen.blit(distance_text, (panel_x + 10, panel_y + 35))
 
         # Monster health
-        monster_health_text = self.small_font.render(f"Monster HP: {int(monster.stats.health)}", True, self.UI_TEXT)
+        monster_health_text = self.small_font.render(f"Monster Health: {int(monster.stats.health)}/{int(monster.stats.max_health)}", True, self.UI_TEXT)
         self.screen.blit(monster_health_text, (panel_x + 10, panel_y + 55))
 
     def _render_fps_counter(self, fps: float):
