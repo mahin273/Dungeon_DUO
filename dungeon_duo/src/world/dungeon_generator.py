@@ -116,14 +116,22 @@ class DungeonGenerator:
         # Ensure connectivity
         self._ensure_connectivity()
 
-        # Place a health quest tile in a random room (not the spawn room)
+        # Place multiple health quest tiles in random rooms (not the spawn room)
         if len(self.rooms) > 1:
             import random
-            room = random.choice(self.rooms[1:])  # Exclude spawn room
-            x = random.randint(room.x + 1, room.x + room.width - 2)
-            y = random.randint(room.y + 1, room.y + room.height - 2)
-            if self.dungeon_map[y][x].tile_type == TileType.ROOM_FLOOR:
-                self.dungeon_map[y][x] = TileFactory.create_health_quest()
+            num_health_pickups = random.randint(3, 5)
+            available_rooms = self.rooms[1:]  # Exclude spawn room
+            placed = 0
+            attempts = 0
+            max_attempts = 20
+            while placed < num_health_pickups and attempts < max_attempts:
+                room = random.choice(available_rooms)
+                x = random.randint(room.x + 1, room.x + room.width - 2)
+                y = random.randint(room.y + 1, room.y + room.height - 2)
+                if self.dungeon_map[y][x].tile_type == TileType.ROOM_FLOOR:
+                    self.dungeon_map[y][x] = TileFactory.create_health_quest()
+                    placed += 1
+                attempts += 1
 
         # Calculate statistics
         self.stats['generation_time'] = time.time() - start_time

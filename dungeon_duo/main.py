@@ -196,6 +196,14 @@ def main():
     def enhanced_handle_events():
         nonlocal collected_treasures
         for event in pygame.event.get():
+            # Reset movement keys if window focus is lost
+            if event.type == pygame.ACTIVEEVENT:
+                if hasattr(event, 'state') and event.state == 2 and event.gain == 0:
+                    for key in movement_keys_held:
+                        movement_keys_held[key] = False
+            if hasattr(pygame, 'WINDOWFOCUSLOST') and event.type == pygame.WINDOWFOCUSLOST:
+                for key in movement_keys_held:
+                    movement_keys_held[key] = False
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
