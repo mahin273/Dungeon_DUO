@@ -10,11 +10,26 @@ from src.ui.renderer import GameRenderer
 from src.ui.hud import ModernHUDManager
 from src.world.tile import TileType
 import math
+import json
+import os
 
 def main():
     """Main function to start the Dungeon Duo game."""
     # Initialize game engine
     engine = GameEngine()
+
+    # Persistent adaptation level file
+    adaptation_file = os.path.join(os.path.dirname(__file__), 'monster_learning.json')
+    adaptation_level = 0
+    # Load adaptation level if file exists
+    if os.path.exists(adaptation_file):
+        try:
+            with open(adaptation_file, 'r') as f:
+                data = json.load(f)
+                adaptation_level = data.get('adaptation_level', 0)
+                print(f"Loaded monster adaptation level: {adaptation_level}")
+        except Exception as e:
+            print(f"Failed to load adaptation level: {e}")
 
     # Generate the dungeon world
     print("Initializing Dungeon Duo: Rough AI...")
@@ -34,6 +49,7 @@ def main():
         if engine.is_valid_position(spawn_x, spawn_y):
             monster = Monster(x=spawn_x, y=spawn_y, dungeon_map=engine.dungeon_map)
             print(f"Monster created at position: ({monster.x}, {monster.y})")
+            monster.adaptation_level = adaptation_level
         else:
             print(f"Invalid monster spawn position: ({spawn_x}, {spawn_y})")
 
@@ -43,10 +59,12 @@ def main():
         if fallback_pos:
             monster = Monster(x=fallback_pos[0], y=fallback_pos[1], dungeon_map=engine.dungeon_map)
             print(f"Monster created at fallback position: ({monster.x}, {monster.y})")
+            monster.adaptation_level = adaptation_level
         else:
             # Last resort - spawn near player but not too close
             monster = Monster(x=spawn_position[0] + 15, y=spawn_position[1] + 15, dungeon_map=engine.dungeon_map)
             print(f"Monster created at emergency position: ({monster.x}, {monster.y})")
+            monster.adaptation_level = adaptation_level
 
     # Ensure monster pathfinder is initialized
     monster.set_dungeon_map(engine.dungeon_map)
@@ -367,6 +385,25 @@ def main():
     print("  - Tactical AI decision making")
 
     print("\nStarting game...")
+
+    # Save adaptation level at the end of the game
+    def save_adaptation_level():
+        if monster:
+            try:
+                with open(adaptation_file, 'w') as f:
+                    json.dump({'adaptation_level': monster.adaptation_level}, f)
+                print(f"Saved monster adaptation level: {monster.adaptation_level}")
+            except Exception as e:
+                print(f"Failed to save adaptation level: {e}")
+
+    # Patch engine.run to save adaptation level on exit
+    original_run = engine.run
+    def patched_run(*args, **kwargs):
+        try:
+            original_run(*args, **kwargs)
+        finally:
+            save_adaptation_level()
+    engine.run = patched_run
 
     # Start game loop
     try:
